@@ -1,4 +1,7 @@
-import { Types } from 'mongoose'
+import { User } from './user.model'
+/* eslint-disable no-unused-vars */
+import { Model, Types } from 'mongoose'
+import { USER_ROLE, USER_STATUS } from './usre.constant'
 
 export type TUser = {
   email: string
@@ -12,5 +15,18 @@ export type TUser = {
   upvotesReceived: number
   posts: Types.ObjectId
   favorites: Types.ObjectId
-  role: 'USER' | 'ADMIN'
+  role: keyof typeof USER_ROLE
+  status: keyof typeof USER_STATUS
+}
+
+export interface IUserModel extends Model<TUser> {
+  isUserExistsByEmail(id: string): Promise<TUser>
+  isPasswordMatched(
+    plainTextPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean>
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number,
+  ): boolean
 }

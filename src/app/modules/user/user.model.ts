@@ -1,7 +1,10 @@
 import mongoose, { model, Schema } from 'mongoose'
-import { TUser } from './user.interface'
+import { USER_ROLE, USER_STATUS } from './usre.constant'
+import { IUserModel, TUser } from './user.interface'
+import config from '../../config'
+import bcryptjs from 'bcryptjs'
 
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser, IUserModel>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   profilePicture: { type: String },
@@ -13,20 +16,54 @@ const userSchema = new Schema<TUser>({
   upvotesReceived: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+  status: {
+    type: String,
+    enum: Object.keys(USER_STATUS),
+    default: USER_STATUS.ACTIVE,
+  },
   role: {
     type: String,
-    enum: ['USER', 'ADMIN'],
-    default: 'USER',
+    enum: Object.keys(USER_ROLE),
+    default: USER_ROLE.USER,
   },
 })
 
-// Pre middleware to exclude documents where isDeleted is true
-userSchema.pre('find', function () {
-  this.where({ isDeleted: { $ne: true } })
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this // doc
+  // hashing password and save into DB
+
+  user.password = await bcryptjs.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  )
+
+  next()
 })
 
-userSchema.pre('findOne', function () {
-  this.where({ isDeleted: { $ne: true } })
+// set '' after saving password
+userSchema.post('save', function (doc, next) {
+  doc.password = ''
+  next()
 })
 
-export const User = model<TUser>('User', userSchema)
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await User.findOne({ email }).select('+password')
+}
+
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bcryptjs.compare(plainTextPassword, hashedPassword)
+}
+
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: number,
+  jwtIssuedTimestamp: number,
+) {
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000
+  return passwordChangedTime > jwtIssuedTimestamp
+}
+export const User = model<TUser, IUserModel>('User', userSchema)

@@ -3,12 +3,17 @@ import cors from 'cors'
 import MainRouter from './app/routes'
 import globalErrorHandler from './app/middleware/globalErrorHandler'
 import notFoundRoute from './app/middleware/notFoundRoute'
+import cookieParser from 'cookie-parser'
 
 const app: Application = express()
 
 //parser
-app.use(express.json())
 app.use(cors())
+app.use(cookieParser())
+
+//parser
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // whole project router call here
 app.use('/api/v1', MainRouter)
