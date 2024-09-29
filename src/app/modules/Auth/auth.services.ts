@@ -1,4 +1,4 @@
-import { JwtPayload } from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '../../config'
 import AppError from '../../errors/AppError'
 import { createToken } from '../../utils/verifyJWT'
@@ -145,8 +145,59 @@ const changePassword = async (
   return null
 }
 
+// REFRESH TOKEN
+const refreshToken = async (token: string) => {
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_secret as string,
+  ) as JwtPayload
+
+  const { email, iat } = decoded
+
+  // checking if the user is exist
+  const user = await User.isUserExistsByEmail(email)
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!')
+  }
+
+  // checking if the user is blocked
+  const userStatus = user?.status
+
+  if (userStatus === 'BLOCKED') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!')
+  }
+
+  if (
+    user.passwordChangedAt &&
+    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !')
+  }
+
+  //  CREATE JWT PAYLOAD
+  const jwtPayload = {
+    _id: user?._id,
+    name: user?.name,
+    email: user?.email,
+    role: user?.role,
+    status: user?.status,
+  }
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  )
+
+  return {
+    accessToken,
+  }
+}
+
 export const AuthServices = {
   registerUser,
   loginUser,
   changePassword,
+  refreshToken,
 }
