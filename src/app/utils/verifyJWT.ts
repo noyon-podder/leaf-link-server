@@ -2,7 +2,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 
 import { Types } from 'mongoose'
-import { USER_ROLE, USER_STATUS } from '../modules/user/usre.constant'
+import { USER_ROLE, USER_STATUS } from '../modules/user/user.constant'
 import AppError from '../errors/AppError'
 
 export const createToken = (

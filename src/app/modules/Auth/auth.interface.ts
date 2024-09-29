@@ -1,4 +1,4 @@
-import { USER_ROLE } from '../user/usre.constant'
+import { USER_ROLE } from '../user/user.constant'
 
 export type TRegisterUser = {
   email: string

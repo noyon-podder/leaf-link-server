@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { USER_ROLE, USER_STATUS } from '../modules/user/usre.constant'
+import { USER_ROLE, USER_STATUS } from '../modules/user/user.constant'
 import catchAsync from '../utils/catchAsync'
 import AppError from '../errors/AppError'
 import httpStatus from 'http-status'

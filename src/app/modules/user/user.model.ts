@@ -1,5 +1,5 @@
 import mongoose, { model, Schema } from 'mongoose'
-import { USER_ROLE, USER_STATUS } from './usre.constant'
+import { USER_ROLE, USER_STATUS } from './user.constant'
 import { IUserModel, TUser } from './user.interface'
 import config from '../../config'
 import bcryptjs from 'bcryptjs'

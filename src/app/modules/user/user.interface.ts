@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Model, Types } from 'mongoose'
-import { USER_ROLE, USER_STATUS } from './usre.constant'
+import { USER_ROLE, USER_STATUS } from './user.constant'
 
 export type TUser = {
   _id: Types.ObjectId
