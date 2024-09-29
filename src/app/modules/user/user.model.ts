@@ -26,6 +26,10 @@ const userSchema = new Schema<TUser, IUserModel>({
     enum: Object.keys(USER_ROLE),
     default: USER_ROLE.USER,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 userSchema.pre('save', async function (next) {
@@ -44,6 +48,17 @@ userSchema.pre('save', async function (next) {
 // set '' after saving password
 userSchema.post('save', function (doc, next) {
   doc.password = ''
+  next()
+})
+
+// Query Middleware
+userSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } })
+  next()
+})
+
+userSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } })
   next()
 })
 

@@ -1,10 +1,12 @@
+import { JwtPayload } from 'jsonwebtoken'
 import config from '../../config'
 import AppError from '../../errors/AppError'
-import { createToken } from '../../utils/verifyToken'
+import { createToken } from '../../utils/verifyJWT'
 import { User } from '../user/user.model'
 import { USER_ROLE, USER_STATUS } from '../user/usre.constant'
 import { TLoginUser, TRegisterUser } from './auth.interface'
 import httpStatus from 'http-status'
+import bcrypt from 'bcryptjs'
 
 // register a new user
 const registerUser = async (payload: TRegisterUser) => {
@@ -66,6 +68,11 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid password')
   }
 
+  // check the user is Deleted
+  if (user?.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User Is Delete!')
+  }
+
   //  create jwt payload
   const jwtPayload = {
     _id: user?._id,
@@ -95,7 +102,51 @@ const loginUser = async (payload: TLoginUser) => {
   }
 }
 
+// CHANGE PASSWORD
+const changePassword = async (
+  userData: JwtPayload,
+  payload: {
+    oldPassword: string
+    newPassword: string
+  },
+) => {
+  const user = await User.isUserExistsByEmail(userData.email)
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found')
+  }
+
+  // checking if the user is blocked
+  if (user?.status === USER_STATUS.BLOCKED) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User Is Blocked!')
+  }
+
+  // checking if the user is deleted
+  if (user?.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User Is Delete!')
+  }
+
+  // checking the password is matched
+  if (!(await User.isPasswordMatched(payload.oldPassword, user?.password))) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Password is not matched')
+  }
+
+  // hash new password
+  const newPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  )
+
+  await User.findOneAndUpdate(
+    { email: userData.email, role: userData.role },
+    { password: newPassword, passwordChangedAt: new Date() },
+  )
+
+  return null
+}
+
 export const AuthServices = {
   registerUser,
   loginUser,
+  changePassword,
 }

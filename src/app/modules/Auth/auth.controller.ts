@@ -4,7 +4,7 @@ import sendResponse from '../../utils/sendResponse'
 import { AuthServices } from './auth.services'
 import config from '../../config'
 
-// register a new user with access token and refresh token
+// REGISTER A NEW USER WITH ACCESS TOKEN & REFRESH TOKEN
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthServices.registerUser(req.body)
 
@@ -26,7 +26,7 @@ const registerUser = catchAsync(async (req, res) => {
   })
 })
 
-// login user with  email and password and set token in cookie
+// LOGIN USER WITH EMAIL & PASSWORD WITH TOKEN SET IN COOKIE
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthServices.loginUser(req.body)
 
@@ -48,7 +48,22 @@ const loginUser = catchAsync(async (req, res) => {
   })
 })
 
+// CHANGE PASSWORD FROM CONTROLLER
+const changePassword = catchAsync(async (req, res) => {
+  const { ...passwordData } = req.body
+
+  const result = await AuthServices.changePassword(req.user, passwordData)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password Update Successfully!',
+    data: result,
+  })
+})
+
 export const AuthControllers = {
   registerUser,
   loginUser,
+  changePassword,
 }

@@ -11,4 +11,15 @@ router.post(
   AuthControllers.registerUser,
 )
 
+router.post(
+  '/login',
+  validateRequest(AuthValidations.loginValidationSchema),
+  AuthControllers.loginUser,
+)
+
+router.post(
+  '/change-password',
+  validateRequest(AuthValidations.changePasswordValidationSchema),
+  AuthControllers.changePassword,
+)
 export const AuthRoutes = router
