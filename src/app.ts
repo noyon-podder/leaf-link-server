@@ -31,6 +31,3 @@ app.use(globalErrorHandler)
 // not found route
 app.use(notFoundRoute)
 export default app
-
-//TODO: first off all start from user login and create access token and refresh token
-//!Lets Start the code
