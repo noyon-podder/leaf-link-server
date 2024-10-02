@@ -57,9 +57,9 @@ const userDelete = catchAsync(async (req: Request, res: Response) => {
 // PROFILE PICTURE UPLOAD
 const profilePictureUpload = catchAsync(async (req: Request, res: Response) => {
   const file = req?.file?.path
-  const token = req?.headers.authorization
+  const userId = req?.user?._id
 
-  const result = await UserService.profilePictureUpload(file, token)
+  const result = await UserService.profilePictureUpload(file, userId)
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -68,12 +68,12 @@ const profilePictureUpload = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
-// PROFILE PICTURE UPLOAD
+//cover PICTURE UPLOAD
 const coverPhotoUpload = catchAsync(async (req: Request, res: Response) => {
   const file = req?.file?.path
-  const token = req?.headers.authorization
+  const userId = req.user._id
 
-  const result = await UserService.coverPhotoUpload(file, token)
+  const result = await UserService.coverPhotoUpload(file, userId)
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -82,12 +82,12 @@ const coverPhotoUpload = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
-// PROFILE PICTURE UPLOAD
+// BIO UPDATE
 const bioUpdate = catchAsync(async (req: Request, res: Response) => {
   const bio = req?.body?.bio
-  const token = req?.headers.authorization
+  const userId = req.user._id
 
-  const result = await UserService.bioUpdate(bio, token)
+  const result = await UserService.bioUpdate(bio, userId)
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -98,10 +98,10 @@ const bioUpdate = catchAsync(async (req: Request, res: Response) => {
 
 // USER FOLLOW CONTROLLER
 const followUser = catchAsync(async (req: Request, res: Response) => {
-  const token = req.headers.authorization
+  const userId = req.user._id
   const { targetedUser } = req.body
 
-  const result = await UserService.followUser(token, targetedUser)
+  const result = await UserService.followUser(userId, targetedUser)
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -111,10 +111,10 @@ const followUser = catchAsync(async (req: Request, res: Response) => {
 })
 // UN FOLLOW USER
 const unFollowUser = catchAsync(async (req: Request, res: Response) => {
-  const token = req.headers.authorization
+  const userId = req.user._id
   const { targetedUser } = req.body
 
-  const result = await UserService.unFollowUser(token, targetedUser)
+  const result = await UserService.unFollowUser(userId, targetedUser)
   sendResponse(res, {
     statusCode: 200,
     success: true,

@@ -1,10 +1,7 @@
 import httpStatus from 'http-status'
-import config from '../../config'
 import AppError from '../../errors/AppError'
-import { verifyToken } from '../../utils/verifyJWT'
 import { TUser } from './user.interface'
 import { User } from './user.model'
-import { JwtPayload } from 'jsonwebtoken'
 import { Types } from 'mongoose'
 
 const createUserIntoDB = async (student: TUser) => {
@@ -43,21 +40,14 @@ const userDeleteFromDB = async (id: string) => {
 // PROFILE PICTURE UPLOAD SUCCESSFULLY
 const profilePictureUpload = async (
   file: string | undefined,
-  token: string | undefined,
+  userId: string,
 ) => {
   if (!file) {
     throw new AppError(httpStatus.NOT_FOUND, 'File Is required')
   }
-  let decode
-  if (token) {
-    decode = verifyToken(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
-  }
 
   const user = await User.findByIdAndUpdate(
-    decode?._id,
+    userId,
     {
       profilePicture: file,
     },
@@ -66,25 +56,14 @@ const profilePictureUpload = async (
 
   return user
 }
-
-// PROFILE PICTURE UPLOAD SUCCESSFULLY
-const coverPhotoUpload = async (
-  file: string | undefined,
-  token: string | undefined,
-) => {
+// COVER PHOTO  UPLOAD SUCCESSFULLY
+const coverPhotoUpload = async (file: string | undefined, userId: string) => {
   if (!file) {
     throw new AppError(httpStatus.NOT_FOUND, 'File Is required')
   }
-  let decode
-  if (token) {
-    decode = verifyToken(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
-  }
 
   const user = await User.findByIdAndUpdate(
-    decode?._id,
+    userId,
     {
       coverPhoto: file,
     },
@@ -95,17 +74,9 @@ const coverPhotoUpload = async (
 }
 
 // USER BIO UPDATE
-const bioUpdate = async (bio: string, token: string | undefined) => {
-  let decode
-  if (token) {
-    decode = verifyToken(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
-  }
-
+const bioUpdate = async (bio: string, userID: string) => {
   const user = await User.findByIdAndUpdate(
-    decode?._id,
+    userID,
     {
       bio: bio,
     },
@@ -116,15 +87,7 @@ const bioUpdate = async (bio: string, token: string | undefined) => {
 }
 
 // FOLLOW USER SERVICES FUNCTION
-const followUser = async (token: string | undefined, targetUserId: string) => {
-  let decode
-  if (token) {
-    decode = verifyToken(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
-  }
-  const userId = decode?._id
+const followUser = async (userId: string, targetUserId: string) => {
   // Convert string IDs into ObjectId
   const userObjectId = new Types.ObjectId(userId)
   const targetUserObjectId = new Types.ObjectId(targetUserId)
@@ -152,18 +115,10 @@ const followUser = async (token: string | undefined, targetUserId: string) => {
 
 // UN FOLLOW USER  SERVICES FUNCTION
 const unFollowUser = async (
-  token: string | undefined,
+  userId: string,
+
   targetUserId: string,
 ) => {
-  let decode
-  if (token) {
-    decode = verifyToken(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
-  }
-  const userId = decode?._id
-
   const targetUserObjectId = new Types.ObjectId(targetUserId)
 
   const user = await User.findById(userId)
