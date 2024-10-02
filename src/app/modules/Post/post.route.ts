@@ -11,6 +11,7 @@ import { PostValidation } from './post.validation'
 
 const router = Router()
 
+// CREATE POST
 router.post(
   '/',
   auth(USER_ROLE.USER),
@@ -21,10 +22,25 @@ router.post(
   PostControllers.createPost,
 )
 
+// GET ALL POST
 router.get(
   '/',
   auth(USER_ROLE.USER, USER_ROLE.ADMIN),
   PostControllers.getAllPosts,
 )
+
+// UPDATE POST
+router.put(
+  '/:id',
+  auth(USER_ROLE.USER),
+  validateRequest(PostValidation.updateValidationSchema),
+  PostControllers.updatePost,
+)
+
+// DELETE POST
+router.delete('/:id', auth(USER_ROLE.USER), PostControllers.deletePost)
+
+// Post premium
+router.put('/premium/:id', auth(USER_ROLE.USER), PostControllers.premiumPost)
 
 export const PostRoutes = router

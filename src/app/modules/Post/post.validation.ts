@@ -35,6 +35,38 @@ const createPostValidationSchema = z.object({
   }),
 })
 
+const updateValidationSchema = z.object({
+  body: z.object({
+    author: z
+      .string()
+      .optional()
+      .refine((val) => !val || mongoose.Types.ObjectId.isValid(val), {
+        message: 'Invalid Author ID',
+      }), // Validate as a valid MongoDB ObjectId if provided
+
+    title: z.string().optional(),
+
+    content: z.string().optional(),
+
+    category: z.enum(categoryEnum).optional().or(z.string().optional()), // Allow category as optional, or as a string fallback
+
+    isPremium: z.boolean().optional(),
+
+    upvotes: z.number().optional().default(0),
+
+    downvotes: z.number().optional().default(0),
+
+    comments: z
+      .array(
+        z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+          message: 'Invalid Comment ID',
+        }),
+      )
+      .optional(),
+  }),
+})
+
 export const PostValidation = {
   createPostValidationSchema,
+  updateValidationSchema,
 }

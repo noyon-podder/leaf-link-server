@@ -10,4 +10,5 @@ export interface IPost {
   upvotes?: number
   downvotes?: number
   comments?: Types.ObjectId[]
+  isDeleted: boolean
 }

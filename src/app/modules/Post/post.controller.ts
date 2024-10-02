@@ -36,7 +36,49 @@ const getAllPosts = catchAsync(async (req, res) => {
   })
 })
 
+// UPDATE   a Premium post
+const premiumPost = catchAsync(async (req, res) => {
+  const postId = req.params.id
+  const item = await PostService.postPremium(postId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'This post now premium',
+    data: item,
+  })
+})
+
+// UPDATE POST
+const updatePost = catchAsync(async (req, res) => {
+  const postId = req.params.id
+  const item = await PostService.updatePost(postId, req.body)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'This post now premium',
+    data: item,
+  })
+})
+
+// DELETE POST
+const deletePost = catchAsync(async (req, res) => {
+  const postId = req.params.id
+  const item = await PostService.deletePost(postId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Post Delete successfully',
+    data: item,
+  })
+})
+
 export const PostControllers = {
   createPost,
   getAllPosts,
+  premiumPost,
+  deletePost,
+  updatePost,
 }
