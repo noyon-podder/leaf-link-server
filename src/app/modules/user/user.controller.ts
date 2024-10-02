@@ -81,6 +81,20 @@ const coverPhotoUpload = catchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+
+// PROFILE PICTURE UPLOAD
+const bioUpdate = catchAsync(async (req: Request, res: Response) => {
+  const bio = req?.body?.bio
+  const token = req?.headers.authorization
+
+  const result = await UserService.bioUpdate(bio, token)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Bio Add Successfully!',
+    data: result,
+  })
+})
 export const UserControllers = {
   createUser,
   getAllUsers,
@@ -88,4 +102,5 @@ export const UserControllers = {
   userDelete,
   profilePictureUpload,
   coverPhotoUpload,
+  bioUpdate,
 }

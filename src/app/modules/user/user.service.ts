@@ -93,6 +93,27 @@ const coverPhotoUpload = async (
   return user
 }
 
+// USER BIO UPDATE
+const bioUpdate = async (bio: string, token: string | undefined) => {
+  let decode
+  if (token) {
+    decode = verifyToken(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload
+  }
+
+  const user = await User.findByIdAndUpdate(
+    decode?._id,
+    {
+      bio: bio,
+    },
+    { new: true, runValidators: true },
+  )
+
+  return user
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -100,4 +121,5 @@ export const UserService = {
   userDeleteFromDB,
   profilePictureUpload,
   coverPhotoUpload,
+  bioUpdate,
 }

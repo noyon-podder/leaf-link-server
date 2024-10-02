@@ -33,4 +33,10 @@ router.put(
   multerUpload.single('image'),
   UserControllers.coverPhotoUpload,
 )
+
+router.put(
+  '/update-bio',
+  auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+  UserControllers.bioUpdate,
+)
 export const UserRoutes = router
