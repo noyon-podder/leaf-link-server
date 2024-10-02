@@ -150,6 +150,41 @@ const followUser = async (token: string | undefined, targetUserId: string) => {
   return
 }
 
+// UN FOLLOW USER  SERVICES FUNCTION
+const unFollowUser = async (
+  token: string | undefined,
+  targetUserId: string,
+) => {
+  let decode
+  if (token) {
+    decode = verifyToken(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload
+  }
+  const userId = decode?._id
+
+  const targetUserObjectId = new Types.ObjectId(targetUserId)
+
+  const user = await User.findById(userId)
+  const targetUser = await User.findById(targetUserObjectId)
+
+  if (!user || !targetUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found')
+  }
+
+  // Remove from following list
+  user.following = user.following.filter((id) => id.toString() !== targetUserId)
+  targetUser.followers = targetUser.followers.filter(
+    (id) => id.toString() !== userId,
+  )
+
+  await user.save()
+  await targetUser.save()
+
+  return
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -159,4 +194,5 @@ export const UserService = {
   coverPhotoUpload,
   bioUpdate,
   followUser,
+  unFollowUser,
 }

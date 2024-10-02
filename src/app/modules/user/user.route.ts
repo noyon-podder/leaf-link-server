@@ -47,4 +47,11 @@ router.post(
   auth(USER_ROLE.ADMIN, USER_ROLE.USER),
   UserControllers.followUser,
 )
+
+// UnFOLLOW USER
+router.post(
+  '/unfollow',
+  auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+  UserControllers.unFollowUser,
+)
 export const UserRoutes = router

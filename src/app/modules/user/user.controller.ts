@@ -96,7 +96,7 @@ const bioUpdate = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
-// PROFILE PICTURE UPLOAD
+// USER FOLLOW CONTROLLER
 const followUser = catchAsync(async (req: Request, res: Response) => {
   const token = req.headers.authorization
   const { targetedUser } = req.body
@@ -106,6 +106,19 @@ const followUser = catchAsync(async (req: Request, res: Response) => {
     statusCode: 200,
     success: true,
     message: 'Followed Successfully!',
+    data: result,
+  })
+})
+// UN FOLLOW USER
+const unFollowUser = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers.authorization
+  const { targetedUser } = req.body
+
+  const result = await UserService.unFollowUser(token, targetedUser)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'UnFollow Successfully!',
     data: result,
   })
 })
@@ -119,4 +132,5 @@ export const UserControllers = {
   coverPhotoUpload,
   bioUpdate,
   followUser,
+  unFollowUser,
 }
