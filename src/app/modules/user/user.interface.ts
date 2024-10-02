@@ -7,6 +7,7 @@ export type TUser = {
   email: string
   password: string
   profilePicture: string
+  coverPhoto: string
   name: string
   bio: string
   followers: Types.ObjectId

@@ -39,6 +39,7 @@ const userDeleteFromDB = async (id: string) => {
   return result
 }
 
+// PROFILE PICTURE UPLOAD SUCCESSFULLY
 const profilePictureUpload = async (
   file: string | undefined,
   token: string | undefined,
@@ -65,10 +66,38 @@ const profilePictureUpload = async (
   return user
 }
 
+// PROFILE PICTURE UPLOAD SUCCESSFULLY
+const coverPhotoUpload = async (
+  file: string | undefined,
+  token: string | undefined,
+) => {
+  if (!file) {
+    throw new AppError(httpStatus.NOT_FOUND, 'File Is required')
+  }
+  let decode
+  if (token) {
+    decode = verifyToken(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload
+  }
+
+  const user = await User.findByIdAndUpdate(
+    decode?._id,
+    {
+      coverPhoto: file,
+    },
+    { new: true, runValidators: true },
+  )
+
+  return user
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
   userDeleteFromDB,
   profilePictureUpload,
+  coverPhotoUpload,
 }

@@ -26,4 +26,11 @@ router.put(
   multerUpload.single('image'),
   UserControllers.profilePictureUpload,
 )
+
+router.put(
+  '/cover-photo',
+  auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+  multerUpload.single('image'),
+  UserControllers.coverPhotoUpload,
+)
 export const UserRoutes = router

@@ -8,6 +8,7 @@ const userSchema = new Schema<TUser, IUserModel>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   profilePicture: { type: String, default: null },
+  coverPhoto: { type: String, default: null },
   name: { type: String, required: true },
   bio: { type: String, default: '' },
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
