@@ -14,7 +14,7 @@ router.post(
   UserControllers.createUser,
 )
 
-router.get('/users', UserControllers.getAllUsers)
+router.get('/users', auth(USER_ROLE.ADMIN), UserControllers.getAllUsers)
 
 router.get('/:id', UserControllers.getSingleUser)
 
@@ -34,9 +34,17 @@ router.put(
   UserControllers.coverPhotoUpload,
 )
 
+// BIO UPDATE
 router.put(
   '/update-bio',
   auth(USER_ROLE.ADMIN, USER_ROLE.USER),
   UserControllers.bioUpdate,
+)
+
+// FOLLOW USER
+router.post(
+  '/follow',
+  auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+  UserControllers.followUser,
 )
 export const UserRoutes = router

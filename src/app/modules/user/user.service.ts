@@ -5,6 +5,7 @@ import { verifyToken } from '../../utils/verifyJWT'
 import { TUser } from './user.interface'
 import { User } from './user.model'
 import { JwtPayload } from 'jsonwebtoken'
+import { Types } from 'mongoose'
 
 const createUserIntoDB = async (student: TUser) => {
   const result = await User.create(student)
@@ -114,6 +115,41 @@ const bioUpdate = async (bio: string, token: string | undefined) => {
   return user
 }
 
+// FOLLOW USER SERVICES FUNCTION
+const followUser = async (token: string | undefined, targetUserId: string) => {
+  let decode
+  if (token) {
+    decode = verifyToken(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload
+  }
+  const userId = decode?._id
+  // Convert string IDs into ObjectId
+  const userObjectId = new Types.ObjectId(userId)
+  const targetUserObjectId = new Types.ObjectId(targetUserId)
+
+  const user = await User.findById(userObjectId)
+  const targetUser = await User.findById(targetUserObjectId)
+
+  if (!user || !targetUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found')
+  }
+
+  // If the user is already following the target user
+  if (user.following.includes(targetUserObjectId)) {
+    throw new Error('Already following this user')
+  }
+
+  user.following.push(targetUserObjectId)
+  targetUser.followers.push(userObjectId)
+
+  await user.save()
+  await targetUser.save()
+
+  return
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -122,4 +158,5 @@ export const UserService = {
   profilePictureUpload,
   coverPhotoUpload,
   bioUpdate,
+  followUser,
 }

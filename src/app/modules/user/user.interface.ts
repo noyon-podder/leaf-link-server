@@ -10,8 +10,8 @@ export type TUser = {
   coverPhoto: string
   name: string
   bio: string
-  followers: Types.ObjectId
-  following: Types.ObjectId
+  followers: Types.ObjectId[]
+  following: Types.ObjectId[]
   passwordChangedAt?: Date
   verified: boolean
   upvotesReceived: number

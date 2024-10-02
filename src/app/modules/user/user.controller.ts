@@ -95,6 +95,21 @@ const bioUpdate = catchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+
+// PROFILE PICTURE UPLOAD
+const followUser = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers.authorization
+  const { targetedUser } = req.body
+
+  const result = await UserService.followUser(token, targetedUser)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Followed Successfully!',
+    data: result,
+  })
+})
+
 export const UserControllers = {
   createUser,
   getAllUsers,
@@ -103,4 +118,5 @@ export const UserControllers = {
   profilePictureUpload,
   coverPhotoUpload,
   bioUpdate,
+  followUser,
 }
