@@ -36,6 +36,18 @@ const getAllPosts = catchAsync(async (req, res) => {
   })
 })
 
+// GET SINGLE POSTS
+const getSinglePost = catchAsync(async (req, res) => {
+  const item = await PostService.getSinglePostFromDB(req.params.id)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Posts retrieved successfully',
+    data: item,
+  })
+})
+
 // UPDATE   a Premium post
 const premiumPost = catchAsync(async (req, res) => {
   const postId = req.params.id
@@ -75,10 +87,51 @@ const deletePost = catchAsync(async (req, res) => {
   })
 })
 
+// UPVOTE POST FORM
+const upvotePost = catchAsync(async (req, res) => {
+  const item = await PostService.upvotePostFromDB(req.params.id)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Upvote Post successfully',
+    data: item,
+  })
+})
+
+// UPVOTE POST FORM
+const downVotePost = catchAsync(async (req, res) => {
+  const item = await PostService.upvotePostFromDB(req.params.id)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Downvote Post successfully',
+    data: item,
+  })
+})
+
+// GET POPULAR POSTS
+const getPopularPosts = catchAsync(async (req, res) => {
+  const item = await PostService.getPopularPostsFromDB()
+
+  console.log(item)
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Popular Post Retrieve successfully',
+    data: item,
+  })
+})
+
 export const PostControllers = {
   createPost,
   getAllPosts,
   premiumPost,
   deletePost,
   updatePost,
+  upvotePost,
+  downVotePost,
+  getSinglePost,
+  getPopularPosts,
 }
