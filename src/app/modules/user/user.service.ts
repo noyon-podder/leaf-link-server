@@ -1,6 +1,10 @@
+import httpStatus from 'http-status'
+import config from '../../config'
 import AppError from '../../errors/AppError'
+import { verifyToken } from '../../utils/verifyJWT'
 import { TUser } from './user.interface'
 import { User } from './user.model'
+import { JwtPayload } from 'jsonwebtoken'
 
 const createUserIntoDB = async (student: TUser) => {
   const result = await User.create(student)
@@ -25,7 +29,6 @@ const getSingleUserFromDB = async (id: string) => {
 }
 
 // single user soft delete from db
-
 const userDeleteFromDB = async (id: string) => {
   const result = await User.findOneAndUpdate(
     { _id: id },
@@ -36,9 +39,36 @@ const userDeleteFromDB = async (id: string) => {
   return result
 }
 
+const profilePictureUpload = async (
+  file: string | undefined,
+  token: string | undefined,
+) => {
+  if (!file) {
+    throw new AppError(httpStatus.NOT_FOUND, 'File Is required')
+  }
+  let decode
+  if (token) {
+    decode = verifyToken(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload
+  }
+
+  const user = await User.findByIdAndUpdate(
+    decode?._id,
+    {
+      profilePicture: file,
+    },
+    { new: true, runValidators: true },
+  )
+
+  return user
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
   userDeleteFromDB,
+  profilePictureUpload,
 }

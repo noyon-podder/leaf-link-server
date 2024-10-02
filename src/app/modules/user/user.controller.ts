@@ -29,8 +29,7 @@ const getAllUsers = catchAsync(async (req, res) => {
   })
 })
 
-// get single student
-
+// GET SINGLE USER
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id
   const result = await UserService.getSingleUserFromDB(id)
@@ -54,9 +53,24 @@ const userDelete = catchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+
+// PROFILE PICTURE UPLOAD
+const profilePictureUpload = catchAsync(async (req: Request, res: Response) => {
+  const file = req?.file?.path
+  const token = req?.headers.authorization
+
+  const result = await UserService.profilePictureUpload(file, token)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Profile Picture Upload Successfully!',
+    data: result,
+  })
+})
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   userDelete,
+  profilePictureUpload,
 }

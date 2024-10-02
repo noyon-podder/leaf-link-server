@@ -15,4 +15,7 @@ export default {
   client_url: process.env.CLIENT_URL,
   email_user: process.env.EMAIL_USER,
   email_pass: process.env.EMAIL_PASS,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloud_api_key: process.env.CLOUDINARY_API_KEY,
+  cloud_api_secret: process.env.CLOUDINARY_API_SECRET,
 }

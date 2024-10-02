@@ -232,7 +232,7 @@ const forgetPassword = async (email: string) => {
     '10m',
   )
 
-  const resetUILink = `${config.client_url}?email=${user.email}&token=${resetToken}`
+  const resetUILink = `${config.client_url}/reset-password?email=${user.email}&token=${resetToken}`
 
   sendEMail(user.email, resetUILink)
 }
