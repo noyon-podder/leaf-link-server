@@ -1,3 +1,4 @@
+import httpStatus from 'http-status'
 import AppError from '../../errors/AppError'
 import { TImageFiles } from '../../interface/image.interface'
 import catchAsync from '../../utils/catchAsync'
@@ -23,6 +24,19 @@ const createPost = catchAsync(async (req, res) => {
   })
 })
 
+// GET ALL POSTS
+const getAllPosts = catchAsync(async (req, res) => {
+  const item = await PostService.getAllPost(req.query)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Posts retrieved successfully',
+    data: item,
+  })
+})
+
 export const PostControllers = {
   createPost,
+  getAllPosts,
 }
