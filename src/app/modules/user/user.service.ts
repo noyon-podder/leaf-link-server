@@ -3,6 +3,7 @@ import AppError from '../../errors/AppError'
 import { TUser } from './user.interface'
 import { User } from './user.model'
 import { Types } from 'mongoose'
+import { Post } from '../Post/post.model'
 
 const createUserIntoDB = async (student: TUser) => {
   const result = await User.create(student)
@@ -16,8 +17,31 @@ const getAllUsersFromDB = async () => {
   return result
 }
 
+// GET ALL POST BY A SPECIFIC USER
+const getAllPostByID = async (userId: string) => {
+  const user = await User.findById(userId)
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  const posts = await Post.find({ author: userId })
+    .populate('author')
+    .sort({ createdAt: -1 })
+
+  return posts
+}
+
+// GET SINGLE USER BY FROM DB
 const getSingleUserFromDB = async (id: string) => {
-  const result = await User.findOne({ _id: id })
+  const result = await User.findById(id)
+    .populate({
+      path: 'posts',
+      populate: {
+        path: 'author',
+        select: 'name email profilePicture',
+      },
+    })
+    .exec()
 
   if (!result) {
     throw new AppError(404, 'User Not Found')
@@ -58,9 +82,9 @@ const profilePictureUpload = async (
 }
 // COVER PHOTO  UPLOAD SUCCESSFULLY
 const coverPhotoUpload = async (file: string | undefined, userId: string) => {
-  if (!file) {
-    throw new AppError(httpStatus.NOT_FOUND, 'File Is required')
-  }
+  // if (!file) {
+  //   throw new AppError(httpStatus.NOT_FOUND, 'File Is required')
+  // }
 
   const user = await User.findByIdAndUpdate(
     userId,
@@ -150,4 +174,5 @@ export const UserService = {
   bioUpdate,
   followUser,
   unFollowUser,
+  getAllPostByID,
 }

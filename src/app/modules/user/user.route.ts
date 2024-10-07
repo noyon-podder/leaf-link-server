@@ -13,10 +13,22 @@ router.post(
   validateRequest(UserValidations.userValidationSchema),
   UserControllers.createUser,
 )
-
+// GET ALL USERS
 router.get('/users', auth(USER_ROLE.ADMIN), UserControllers.getAllUsers)
 
-router.get('/:id', UserControllers.getSingleUser)
+// GET SINGLE USER
+router.get(
+  '/single-user/:id',
+  auth(USER_ROLE.USER, USER_ROLE.ADMIN),
+  UserControllers.getSingleUser,
+)
+
+// GET  POST BY USER ID
+router.get(
+  '/:userId',
+  auth(USER_ROLE.USER, USER_ROLE.ADMIN),
+  UserControllers.getAllPostByUserId,
+)
 
 router.delete('/:id', UserControllers.userDelete)
 

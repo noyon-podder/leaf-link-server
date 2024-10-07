@@ -89,7 +89,8 @@ const deletePost = catchAsync(async (req, res) => {
 
 // UPVOTE POST FORM
 const upvotePost = catchAsync(async (req, res) => {
-  const item = await PostService.upvotePostFromDB(req.params.id)
+  const userId = req?.user?._id
+  const item = await PostService.upvotePostFromDB(req.params.id, userId)
 
   sendResponse(res, {
     success: true,
@@ -99,9 +100,10 @@ const upvotePost = catchAsync(async (req, res) => {
   })
 })
 
-// UPVOTE POST FORM
+// downVOTE POST FORM
 const downVotePost = catchAsync(async (req, res) => {
-  const item = await PostService.upvotePostFromDB(req.params.id)
+  const userId = req?.user?._id
+  const item = await PostService.downvotePostFromDB(req.params.id, userId)
 
   sendResponse(res, {
     success: true,

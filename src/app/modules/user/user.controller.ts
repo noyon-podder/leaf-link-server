@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { UserService } from './user.service'
 import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
+import httpStatus from 'http-status'
 
 // create a user
 const createUser = catchAsync(async (req, res) => {
@@ -32,12 +33,26 @@ const getAllUsers = catchAsync(async (req, res) => {
 // GET SINGLE USER
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id
+
   const result = await UserService.getSingleUserFromDB(id)
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: 'Single User retrieve Successfully',
+    data: result,
+  })
+})
+
+//  GET POST BY ID
+const getAllPostByUserId = catchAsync(async (req, res) => {
+  const { userId } = req.params
+  const result = await UserService.getAllPostByID(userId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Get Post by specific user',
     data: result,
   })
 })
@@ -133,4 +148,5 @@ export const UserControllers = {
   bioUpdate,
   followUser,
   unFollowUser,
+  getAllPostByUserId,
 }

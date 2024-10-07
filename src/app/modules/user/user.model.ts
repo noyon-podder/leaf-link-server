@@ -15,6 +15,7 @@ const userSchema = new Schema<TUser, IUserModel>({
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   verified: { type: Boolean, default: false },
   upvotesReceived: { type: Number, default: 0 },
+  downvotesReceived: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   status: {

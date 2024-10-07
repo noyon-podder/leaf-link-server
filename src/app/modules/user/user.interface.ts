@@ -15,6 +15,7 @@ export type TUser = {
   passwordChangedAt?: Date
   verified: boolean
   upvotesReceived: number
+  downvotesReceived: number
   posts: Types.ObjectId
   favorites: Types.ObjectId
   role: keyof typeof USER_ROLE
