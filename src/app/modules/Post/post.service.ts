@@ -195,8 +195,14 @@ export const downvotePostFromDB = async (
 // GET SINGLE POST FROM DB
 const getSinglePostFromDB = async (postId: string) => {
   const post = await Post.findById(postId)
-    .populate('author')
-    .populate('comments')
+    .populate('author', 'name profilePicture')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'name profilePicture',
+      },
+    })
 
   if (!post) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found')
