@@ -195,13 +195,22 @@ export const downvotePostFromDB = async (
 // GET SINGLE POST FROM DB
 const getSinglePostFromDB = async (postId: string) => {
   const post = await Post.findById(postId)
-    .populate('author', 'name profilePicture')
+    .populate('author', 'name profilePicture') // Populate author's name and profilePicture for the post
     .populate({
-      path: 'comments',
-      populate: {
-        path: 'author',
-        select: 'name profilePicture',
-      },
+      path: 'comments', // Populate the comments
+      populate: [
+        {
+          path: 'author', // Populate author inside each comment
+          select: 'name profilePicture', // Only select name and profilePicture for the author
+        },
+        {
+          path: 'replies', // Populate replies within each comment
+          populate: {
+            path: 'author', // Populate author inside each reply
+            select: 'name profilePicture content', // Only select name and profilePicture for the reply author
+          },
+        },
+      ],
     })
 
   if (!post) {
