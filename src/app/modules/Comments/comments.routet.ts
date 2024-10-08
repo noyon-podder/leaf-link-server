@@ -6,9 +6,21 @@ import { CommentControllers } from './comments.controller'
 const router = Router()
 
 router.post(
-  '/add-comment/:postId',
+  '/:postId/add-comment',
   auth(USER_ROLE.USER),
   CommentControllers.addComment,
+)
+
+router.post(
+  '/:commentId/replay',
+  auth(USER_ROLE.USER),
+  CommentControllers.repliedComment,
+)
+
+router.get(
+  '/:postId/comments',
+  auth(USER_ROLE.USER),
+  CommentControllers.getComments,
 )
 
 export const CommentRoutes = router

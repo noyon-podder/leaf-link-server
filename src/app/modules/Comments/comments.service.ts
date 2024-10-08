@@ -1,8 +1,9 @@
 import httpStatus from 'http-status'
 import AppError from '../../errors/AppError'
 import { Post } from '../Post/post.model'
-import { Comment } from './commnets.model'
+import { Comment } from './comments.model'
 
+// ADD COMMENT
 const addCommentIntoDB = async (
   postId: string,
   payload: { authorId: string; content: string },
@@ -30,4 +31,44 @@ const addCommentIntoDB = async (
   return newComment
 }
 
-export const CommentsService = { addCommentIntoDB }
+// REPLIED SPECIFIC COMMENT
+const repliedSpecificComment = async (
+  commentId: string,
+  payload: { authorId: string; content: string },
+) => {
+  const { authorId, content } = payload
+
+  const parentComment = await Comment.findById(commentId)
+  if (!parentComment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Parent comment not found')
+  }
+
+  const newReply = new Comment({
+    post: parentComment.post,
+    author: authorId,
+    content,
+  })
+
+  await newReply.save()
+
+  // Add the reply to the parent comment's replies array
+  parentComment.replies.push(newReply._id)
+  await parentComment.save()
+
+  return parentComment
+}
+
+// GET ALL COMMENT
+export const getCommentsByPost = async (postId: string) => {
+  const comments = await Comment.find({ post: postId })
+    .populate('author', 'name')
+    .populate('replies')
+
+  return comments
+}
+
+export const CommentsService = {
+  addCommentIntoDB,
+  repliedSpecificComment,
+  getCommentsByPost,
+}
