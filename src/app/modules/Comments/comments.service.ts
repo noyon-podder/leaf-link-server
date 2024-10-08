@@ -61,7 +61,7 @@ const repliedSpecificComment = async (
 // GET ALL COMMENT
 export const getCommentsByPost = async (postId: string) => {
   const comments = await Comment.find({ post: postId })
-    .populate('author', 'name')
+    .populate('author', 'name profilePicture')
     .populate('replies')
 
   return comments
