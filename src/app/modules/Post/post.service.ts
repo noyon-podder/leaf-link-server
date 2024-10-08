@@ -21,7 +21,10 @@ const createPost = async (payload: IPost, images: TImageFiles) => {
 
 // GET ALL POST WITH SEARCH
 const getAllPost = async (query: Record<string, unknown>) => {
-  const itemQuery = new QueryBuilder(Post.find().populate('author'), query)
+  const itemQuery = new QueryBuilder(
+    Post.find().populate('author', '_id name email profilePicture'),
+    query,
+  )
     .filter()
     .search(PostsSearchableFields)
     .sort()
