@@ -22,7 +22,9 @@ const createPost = async (payload: IPost, images: TImageFiles) => {
 // GET ALL POST WITH SEARCH
 const getAllPost = async (query: Record<string, unknown>) => {
   const itemQuery = new QueryBuilder(
-    Post.find().populate('author', '_id name email profilePicture'),
+    Post.find()
+      .populate('author', '_id name email profilePicture')
+      .populate('comments'),
     query,
   )
     .filter()
@@ -192,7 +194,9 @@ export const downvotePostFromDB = async (
 
 // GET SINGLE POST FROM DB
 const getSinglePostFromDB = async (postId: string) => {
-  const post = await Post.findById(postId).populate('author')
+  const post = await Post.findById(postId)
+    .populate('author')
+    .populate('comments')
 
   if (!post) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found')
