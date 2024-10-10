@@ -59,7 +59,7 @@ const repliedSpecificComment = async (
 }
 
 // GET ALL COMMENT
-export const getCommentsByPost = async (postId: string) => {
+const getCommentsByPost = async (postId: string) => {
   const comments = await Comment.find({ post: postId })
     .populate('author', 'name profilePicture')
     .populate('replies')
@@ -67,8 +67,37 @@ export const getCommentsByPost = async (postId: string) => {
   return comments
 }
 
+// DELETE A COMMENT
+const deleteCommentFromDb = async (commentId: string) => {
+  const result = await Comment.findByIdAndDelete(commentId)
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Comment  not found')
+  }
+
+  return result
+}
+
+// UPDATE COMMENT
+const updateCommentFromDB = async (commentId: string, payload: string) => {
+  const result = await Comment.findByIdAndUpdate(
+    commentId,
+    {
+      content: payload,
+    },
+    { new: true },
+  )
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Comment not found')
+  }
+
+  return result
+}
 export const CommentsService = {
   addCommentIntoDB,
   repliedSpecificComment,
   getCommentsByPost,
+  deleteCommentFromDb,
+  updateCommentFromDB,
 }

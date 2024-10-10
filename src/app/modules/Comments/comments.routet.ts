@@ -23,4 +23,16 @@ router.get(
   CommentControllers.getComments,
 )
 
+router.delete(
+  '/:commentId',
+  auth(USER_ROLE.USER),
+  CommentControllers.deleteComment,
+)
+
+router.put(
+  '/:commentId',
+  auth(USER_ROLE.USER),
+  CommentControllers.updateComment,
+)
+
 export const CommentRoutes = router
