@@ -52,6 +52,15 @@ const postPremium = async (postId: string) => {
   return result
 }
 
+// GET ALL PAID POST
+const getAllGetPaidPostFromDB = async () => {
+  const result = await Post.find({ isPremium: true })
+    .populate('author', '_id name email profilePicture')
+    .populate('comments')
+
+  return result
+}
+
 // UPDATE POST
 const updatePost = async (itemId: string, payload: IPost) => {
   const result = await Post.findByIdAndUpdate(itemId, payload, { new: true })
@@ -79,11 +88,9 @@ export const upvotePostFromDB = async (
   postId: string | Types.ObjectId,
   userId: string | Types.ObjectId,
 ) => {
-  // Ensure both postId and userId are ObjectId instances for consistent comparison
   const postObjectId = new mongoose.Types.ObjectId(postId)
   const userObjectId = new mongoose.Types.ObjectId(userId)
 
-  // Fetch the post and user by their IDs
   const post = await Post.findById(postObjectId)
   const user = await User.findById(userObjectId)
 
@@ -195,7 +202,7 @@ export const downvotePostFromDB = async (
 // GET SINGLE POST FROM DB
 const getSinglePostFromDB = async (postId: string) => {
   const post = await Post.findById(postId)
-    .populate('author', 'name profilePicture') // Populate author's name and profilePicture for the post
+    .populate('author', 'name email profilePicture') // Populate author's name and profilePicture for the post
     .populate({
       path: 'comments', // Populate the comments
       populate: [
@@ -242,4 +249,5 @@ export const PostService = {
   downvotePostFromDB,
   getSinglePostFromDB,
   getPopularPostsFromDB,
+  getAllGetPaidPostFromDB,
 }

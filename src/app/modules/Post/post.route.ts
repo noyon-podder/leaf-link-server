@@ -28,6 +28,13 @@ router.get('/', PostControllers.getAllPosts)
 // SINGLE POST
 router.get('/:id', PostControllers.getSinglePost)
 
+// GET ALL PAID POST
+router.get(
+  '/paid/posts',
+  auth(USER_ROLE.USER, USER_ROLE.ADMIN),
+  PostControllers.getAllPaidPost,
+)
+
 // UPDATE POST
 router.put(
   '/:id',
@@ -50,5 +57,8 @@ router.post('/:id/downvote', auth(USER_ROLE.USER), PostControllers.downVotePost)
 
 // POPULAR POSTS
 router.get('/popular/posts', PostControllers.getPopularPosts)
+
+// VERIFY USER BY AMARPAY PAYMENT SYSTEM
+router.post('/verify/payment')
 
 export const PostRoutes = router

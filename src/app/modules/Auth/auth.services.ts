@@ -8,6 +8,7 @@ import { TLoginUser, TRegisterUser } from './auth.interface'
 import httpStatus from 'http-status'
 import bcrypt from 'bcryptjs'
 import { sendEMail } from '../../utils/sendEmail'
+import { verifyJWTToken } from './auth.utils'
 
 // register a new user
 const registerUser = async (payload: TRegisterUser) => {
@@ -23,11 +24,16 @@ const registerUser = async (payload: TRegisterUser) => {
 
   // create JWT payload and sent to client
   const jwtPayload = {
-    _id: newUser._id,
+    userId: newUser._id,
     name: newUser.name,
     email: newUser.email,
     role: newUser.role,
     status: newUser.status,
+    profilePicture: newUser?.profilePicture,
+    followers: newUser?.followers,
+    following: newUser?.following,
+    verified: newUser?.verified,
+    upvotesReceived: newUser?.upvotesReceived,
   }
 
   // create access token
@@ -76,7 +82,7 @@ const loginUser = async (payload: TLoginUser) => {
 
   //  create jwt payload
   const jwtPayload = {
-    _id: user?._id,
+    userId: user?._id,
     name: user?.name,
     email: user?.email,
     role: user?.role,
@@ -153,10 +159,7 @@ const changePassword = async (
 
 // REFRESH TOKEN
 const refreshToken = async (token: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload
+  const decoded = verifyJWTToken(token, config.jwt_refresh_secret as string)
 
   const { email, iat } = decoded
 
@@ -183,7 +186,7 @@ const refreshToken = async (token: string) => {
 
   //  CREATE JWT PAYLOAD
   const jwtPayload = {
-    _id: user?._id,
+    userId: user?._id,
     name: user?.name,
     email: user?.email,
     role: user?.role,
@@ -229,7 +232,7 @@ const forgetPassword = async (email: string) => {
   }
 
   const jwtPayload = {
-    _id: user?._id,
+    userId: user?._id,
     name: user?.name,
     email: user?.email,
     role: user?.role,

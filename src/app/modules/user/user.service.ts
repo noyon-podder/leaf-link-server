@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status'
 import AppError from '../../errors/AppError'
 import { TUser } from './user.interface'
 import { User } from './user.model'
 import { Types } from 'mongoose'
 import { Post } from '../Post/post.model'
+import { initiatePayment } from '../payment/payment.utils'
+import { Payment } from '../payment/payment.model'
 
 const createUserIntoDB = async (student: TUser) => {
   const result = await User.create(student)
@@ -25,7 +28,7 @@ const getAllPostByID = async (userId: string) => {
   }
 
   const posts = await Post.find({ author: userId })
-    .populate('author')
+    .populate('author', 'name email profilePicture')
     .sort({ createdAt: -1 })
 
   return posts
@@ -78,6 +81,10 @@ const profilePictureUpload = async (
     { new: true, runValidators: true },
   )
 
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+  }
+  console.log({ user })
   return user
 }
 // COVER PHOTO  UPLOAD SUCCESSFULLY
@@ -112,6 +119,7 @@ const bioUpdate = async (bio: string, userID: string) => {
 
 // FOLLOW USER SERVICES FUNCTION
 const followUser = async (userId: string, targetUserId: string) => {
+  console.log({ userId, targetUserId })
   // Convert string IDs into ObjectId
   const userObjectId = new Types.ObjectId(userId)
   const targetUserObjectId = new Types.ObjectId(targetUserId)
@@ -164,6 +172,64 @@ const unFollowUser = async (
   return
 }
 
+// VERIFIED USER BY AMAR PAY PAYMENT SYSTEM
+const verifyUserByAmarPay = async (userId: string) => {
+  // Query to find a user with at least 1 upvote
+  const user = await User.findOne({ _id: userId, upvotesReceived: { $gte: 1 } })
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'You need at least 1 upvote to verify your profile.',
+    )
+  }
+
+  const transactionId = `TXN-${Date.now()}`
+
+  // Order information save into payment model
+  const orderInformation = {
+    user: user,
+    transactionId: transactionId,
+    totalPrice: 30,
+    paymentMethod: 'amarpay',
+  }
+  await Payment.create(orderInformation)
+
+  const paymentData = {
+    transactionId,
+    customerName: user.name,
+    customerEmail: user.email,
+  }
+
+  // PAYMENT
+  const paymentSession = await initiatePayment(paymentData)
+
+  console.log(paymentSession)
+
+  return paymentSession
+}
+
+// GET ME SERVICES FUNCTION
+const getMeFromDB = async (userId: string) => {
+  const result = await User.findById(userId)
+  return result
+}
+
+// CHANGE USER STATUS
+const changeUserStatus = async (userId: string, status: any) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { status: status },
+    { new: true },
+  )
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found!')
+  }
+
+  return user
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -175,4 +241,7 @@ export const UserService = {
   followUser,
   unFollowUser,
   getAllPostByID,
+  verifyUserByAmarPay,
+  getMeFromDB,
+  changeUserStatus,
 }

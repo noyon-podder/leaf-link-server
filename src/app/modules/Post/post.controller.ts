@@ -48,6 +48,18 @@ const getSinglePost = catchAsync(async (req, res) => {
   })
 })
 
+// GET ALL PAID POST
+const getAllPaidPost = catchAsync(async (req, res) => {
+  const item = await PostService.getAllGetPaidPostFromDB()
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Paid Post Retrieve successfully',
+    data: item,
+  })
+})
+
 // UPDATE   a Premium post
 const premiumPost = catchAsync(async (req, res) => {
   const postId = req.params.id
@@ -89,7 +101,7 @@ const deletePost = catchAsync(async (req, res) => {
 
 // UPVOTE POST FORM
 const upvotePost = catchAsync(async (req, res) => {
-  const userId = req?.user?._id
+  const userId = req?.user?.userId
   const item = await PostService.upvotePostFromDB(req.params.id, userId)
 
   sendResponse(res, {
@@ -102,7 +114,7 @@ const upvotePost = catchAsync(async (req, res) => {
 
 // downVOTE POST FORM
 const downVotePost = catchAsync(async (req, res) => {
-  const userId = req?.user?._id
+  const userId = req?.user?.userId
   const item = await PostService.downvotePostFromDB(req.params.id, userId)
 
   sendResponse(res, {
@@ -136,4 +148,5 @@ export const PostControllers = {
   downVotePost,
   getSinglePost,
   getPopularPosts,
+  getAllPaidPost,
 }

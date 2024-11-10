@@ -67,3 +67,25 @@ router.post(
   UserControllers.unFollowUser,
 )
 export const UserRoutes = router
+
+// VERIFIED USER BY AMAR PAY
+router.post(
+  '/verify',
+  auth(USER_ROLE.USER),
+  UserControllers.verifiedUserAmarPay,
+)
+
+// GET ME ROUTE
+router.get(
+  '/userInfo/me',
+  auth(USER_ROLE.ADMIN, USER_ROLE.USER),
+  UserControllers.getMe,
+)
+
+// CHANGE STATUS BY USER
+router.put(
+  '/change-status/:userId',
+  auth(USER_ROLE.ADMIN),
+  validateRequest(UserValidations.userChangeValidationSchema),
+  UserControllers.changeStatus,
+)

@@ -72,7 +72,7 @@ const userDelete = catchAsync(async (req: Request, res: Response) => {
 // PROFILE PICTURE UPLOAD
 const profilePictureUpload = catchAsync(async (req: Request, res: Response) => {
   const file = req?.file?.path
-  const userId = req?.user?._id
+  const userId = req?.user?.userId
 
   const result = await UserService.profilePictureUpload(file, userId)
   sendResponse(res, {
@@ -86,7 +86,7 @@ const profilePictureUpload = catchAsync(async (req: Request, res: Response) => {
 //cover PICTURE UPLOAD
 const coverPhotoUpload = catchAsync(async (req: Request, res: Response) => {
   const file = req?.file?.path
-  const userId = req.user._id
+  const userId = req.user.userId
 
   const result = await UserService.coverPhotoUpload(file, userId)
   sendResponse(res, {
@@ -100,7 +100,7 @@ const coverPhotoUpload = catchAsync(async (req: Request, res: Response) => {
 // BIO UPDATE
 const bioUpdate = catchAsync(async (req: Request, res: Response) => {
   const bio = req?.body?.bio
-  const userId = req.user._id
+  const userId = req.user.userId
 
   const result = await UserService.bioUpdate(bio, userId)
   sendResponse(res, {
@@ -113,9 +113,9 @@ const bioUpdate = catchAsync(async (req: Request, res: Response) => {
 
 // USER FOLLOW CONTROLLER
 const followUser = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user._id
-  const { targetedUser } = req.body
-
+  const userId = req?.user?.userId
+  const targetedUser = req.body.targetUserId
+  console.log(userId, targetedUser)
   const result = await UserService.followUser(userId, targetedUser)
   sendResponse(res, {
     statusCode: 200,
@@ -126,7 +126,7 @@ const followUser = catchAsync(async (req: Request, res: Response) => {
 })
 // UN FOLLOW USER
 const unFollowUser = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user._id
+  const userId = req.user.userId
   const { targetedUser } = req.body
 
   const result = await UserService.unFollowUser(userId, targetedUser)
@@ -134,6 +134,47 @@ const unFollowUser = catchAsync(async (req: Request, res: Response) => {
     statusCode: 200,
     success: true,
     message: 'UnFollow Successfully!',
+    data: result,
+  })
+})
+
+// VERIFIED USER BY AMAR PAY
+const verifiedUserAmarPay = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.userId
+
+  const result = await UserService.verifyUserByAmarPay(userId)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User Verified!',
+    data: result,
+  })
+})
+
+// GET ME CONTROLLER FUNCTION
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const user = req?.user
+
+  const result = await UserService.getMeFromDB(user.userId)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Get Me Successfully!',
+    data: result,
+  })
+})
+
+// USER CHANGE STATUS
+const changeStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId
+  const { status } = req.body
+
+  console.log(status)
+  const result = await UserService.changeUserStatus(userId, status)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Change Status Successfully!',
     data: result,
   })
 })
@@ -149,4 +190,7 @@ export const UserControllers = {
   followUser,
   unFollowUser,
   getAllPostByUserId,
+  verifiedUserAmarPay,
+  getMe,
+  changeStatus,
 }
