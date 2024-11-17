@@ -57,6 +57,7 @@ const registerUser = async (payload: TRegisterUser) => {
 
 // login user with token
 const loginUser = async (payload: TLoginUser) => {
+  console.log(payload)
   const user = await User.isUserExistsByEmail(payload?.email)
 
   if (!user) {

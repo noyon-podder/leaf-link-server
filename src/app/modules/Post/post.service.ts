@@ -239,6 +239,17 @@ const getPopularPostsFromDB = async () => {
   return result
 }
 
+// GET POST BY USER
+const getPostByUserInDB = async (userId: string) => {
+  const posts = await Post.find({ author: userId }).exec()
+
+  if (!posts || posts.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Post not found')
+  }
+
+  return posts
+}
+
 export const PostService = {
   createPost,
   getAllPost,
@@ -250,4 +261,5 @@ export const PostService = {
   getSinglePostFromDB,
   getPopularPostsFromDB,
   getAllGetPaidPostFromDB,
+  getPostByUserInDB,
 }

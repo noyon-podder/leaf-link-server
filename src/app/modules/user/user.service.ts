@@ -230,6 +230,26 @@ const changeUserStatus = async (userId: string, status: any) => {
   return user
 }
 
+// TOP WRITERS
+const topWritersFollwUserAction = async () => {
+  const users = await User.find({ isDeleted: false }).lean()
+
+  console.log(users)
+
+  const topWriters = users
+    .map((user) => ({
+      ...user,
+      score:
+        (user.followers?.length || 0) * 2 +
+        // (user.posts?.length || 0) * 1.5 +
+        (user.upvotesReceived || 0) * 3,
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+
+  return topWriters
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -244,4 +264,5 @@ export const UserService = {
   verifyUserByAmarPay,
   getMeFromDB,
   changeUserStatus,
+  topWritersFollwUserAction,
 }

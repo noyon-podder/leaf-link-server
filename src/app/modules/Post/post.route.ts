@@ -61,4 +61,11 @@ router.get('/popular/posts', PostControllers.getPopularPosts)
 // VERIFY USER BY AMARPAY PAYMENT SYSTEM
 router.post('/verify/payment')
 
+// GET POST BY USER
+router.get(
+  '/posts/by-user',
+  auth(USER_ROLE.USER, USER_ROLE.ADMIN),
+  PostControllers.getPostByUser,
+)
+
 export const PostRoutes = router

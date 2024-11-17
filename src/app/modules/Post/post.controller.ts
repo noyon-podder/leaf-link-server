@@ -129,11 +129,26 @@ const downVotePost = catchAsync(async (req, res) => {
 const getPopularPosts = catchAsync(async (req, res) => {
   const item = await PostService.getPopularPostsFromDB()
 
-  console.log(item)
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Popular Post Retrieve successfully',
+    data: item,
+  })
+})
+
+// GET POST BY USER
+const getPostByUser = catchAsync(async (req, res) => {
+  const userId = req.user?.userId
+
+  console.log('GET POS₺BY ID', userId)
+  // const item = await PostService.getPostByUserInDB(userId)
+  const item = await PostService.getPostByUserInDB(userId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Post By User Retrieve successfully',
     data: item,
   })
 })
@@ -149,4 +164,5 @@ export const PostControllers = {
   getSinglePost,
   getPopularPosts,
   getAllPaidPost,
+  getPostByUser,
 }

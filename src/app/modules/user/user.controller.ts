@@ -179,6 +179,17 @@ const changeStatus = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+// TOP WRITERS
+const topWrites = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.topWritersFollwUserAction()
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Top Writers Fetch!',
+    data: result,
+  })
+})
+
 export const UserControllers = {
   createUser,
   getAllUsers,
@@ -193,4 +204,5 @@ export const UserControllers = {
   verifiedUserAmarPay,
   getMe,
   changeStatus,
+  topWrites,
 }

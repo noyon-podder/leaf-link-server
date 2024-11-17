@@ -89,3 +89,6 @@ router.put(
   validateRequest(UserValidations.userChangeValidationSchema),
   UserControllers.changeStatus,
 )
+
+// TOP WRITERS
+router.get('/writer/top-writers', UserControllers.topWrites)
